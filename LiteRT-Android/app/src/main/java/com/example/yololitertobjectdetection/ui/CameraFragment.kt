@@ -59,7 +59,7 @@ class CameraFragment : Fragment(), Detector.DetectorListener {
 
         cameraExecutor.execute {
             detector = Detector(requireContext(), MODEL_PATH, LABELS_PATH, this) {
-                toast(it)
+                Log.e(TAG, it)
             }
         }
 
@@ -185,6 +185,7 @@ class CameraFragment : Fragment(), Detector.DetectorListener {
     override fun onEmptyDetect() {
         requireActivity().runOnUiThread {
             binding.overlay.clear()
+            binding.detectionInfo.text = "未检测到对象"
         }
     }
 
@@ -194,12 +195,7 @@ class CameraFragment : Fragment(), Detector.DetectorListener {
                 setResults(boundingBoxes)
                 invalidate()
             }
-        }
-    }
-
-    private fun toast(message: String) {
-        lifecycleScope.launch(Dispatchers.Main) {
-            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            binding.detectionInfo.text = "检测到: ${boundingBoxes.size} 个对象 | ${inferenceTime}ms"
         }
     }
 
